@@ -15,6 +15,8 @@ fi
 
 if [ -n "${CIRCLECI}" ];then
     . $HOME/miniconda/etc/profile.d/conda.sh
+    conda env remove -n eman -y
+    conda create -n eman eman-deps-dev=${EMAN_DEPS_VERSION} -c cryoem -c defaults -c conda-forge --yes --quiet
     conda activate eman
 fi
 
