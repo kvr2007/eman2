@@ -21,6 +21,45 @@ case ${EMAN_INSTALL_DONT_UPDATE_DEPS:-} in
         ;;
 esac
 
+set +x
+
+python <<ENDPATCH
+import platform
+import sys
+import site
+from pathlib import Path
+from subprocess import run
+
+
+def is_python_patched():
+    py_ver = platform.python_version_tuple()
+    
+    return int(py_ver[0]) >= 3 and (   int(py_ver[1]) >= 8 and int(py_ver[2]) >= 8
+                                    or int(py_ver[1]) >= 9 and int(py_ver[2]) >= 1)
+
+print("\n\nPatching PyOpenGL for 'macOS Big Sur'? ... ", end='')
+
+
+file_to_patch =  Path(site.getsitepackages()[0]) / 'OpenGL/platform/ctypesloader.py'
+patch='''
+@@ -76,7 +76,7 @@ def _loadLibraryWindows(dllType, name, mode):
+     """
+     fullName = None
+     try:
+-        fullName = util.find_library( name )
++        fullName = '/System/Library/Frameworks/' + name + '.framework/' + name
+         if fullName is not None:
+             name = fullName
+         elif os.path.isfile( os.path.join( DLL_DIRECTORY, name + '.dll' )):
+'''
+
+if platform.mac_ver()[0] == '10.16' and not is_python_patched():
+    print("yes")
+    run(['patch', str(file_to_patch),], input=patch, text=True)
+else:
+    print("no")
+ENDPATCH
+
 cat <<EOF
 
 INSTALLATION IS NOW COMPLETE
