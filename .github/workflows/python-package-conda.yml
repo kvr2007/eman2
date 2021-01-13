@@ -21,6 +21,10 @@ jobs:
     - name: Install dependencies
       run: |
         conda create -n eman-deps eman-deps-dev=24.1 -c cryoem -c defaults -c conda-forge
+        cmake .
+        make -j4
+        make install
+        make test-verbose
     - name: Lint with flake8
       run: |
         conda install flake8
