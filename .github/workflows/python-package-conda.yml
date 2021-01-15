@@ -22,7 +22,10 @@ jobs:
         conda info
         conda create -n eman-deps eman-deps-dev=24.1 -c cryoem -c defaults -c conda-forge
         conda activate eman-deps
-        cmake .
+        ls
+        mkdir build
+        cd build
+        cmake ..
         make -j4
         make install
         make test-verbose
