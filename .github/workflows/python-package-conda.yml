@@ -18,7 +18,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Conda info
       shell: bash -l {0}
-      run: conda info
+      run: |
+        conda info
+        conda create -n eman-deps eman-deps-dev=24.1 -c cryoem -c defaults -c conda-forge
+        conda activate eman-deps
+        cmake .
+        make -j4
+        make install
+        make test-verbose
     - name: Conda list
       shell: pwsh
       run: conda list
