@@ -1279,10 +1279,11 @@ class boxerTopaz(QtCore.QObject):
 	conda_init_path = conda_base_path / "etc" / "profile.d" / "conda.sh"
 	conda_activate_cmd = "conda activate topaz"
 
-	mrc_micro_path           = Path("topaz") / "mrc_micro"
-	particles_path           = Path("topaz") / "processed" / "particles"
-	micrographs_path         = Path("topaz") / "processed" / "micrographs"
-	predicted_particles_path = Path("topaz") / "processed" / "predicted_particles"
+	topaz_path               = Path("topaz")
+	mrc_micro_path           = topaz_path / "mrc_micro"
+	particles_path           = topaz_path / "processed" / "particles"
+	micrographs_path         = topaz_path / "processed" / "micrographs"
+	predicted_particles_path = topaz_path / "processed" / "predicted_particles"
 
 	@staticmethod
 	def _launch_childprocess(cmd_topaz):
@@ -1389,8 +1390,8 @@ class boxerTopaz(QtCore.QObject):
 										f"--num-epochs 10 " \
 										f"--num-workers {threads} " \
 										f"--device {gpu} " \
-										f"--save-prefix topaz/model " \
-										f"--output topaz/results.txt")
+										f"--save-prefix {boxerTopaz.topaz_path}/model " \
+										f"--output {boxerTopaz.topaz_path}/results.txt")
 
 	@staticmethod
 	def do_autobox(micrograph,goodrefs,badrefs,bgrefs,apix,nthreads,params,prog=None):
@@ -1404,7 +1405,7 @@ class boxerTopaz(QtCore.QObject):
 
 		boxerTopaz._launch_childprocess(f"topaz extract " \
 										f"{boxerTopaz.micrographs_path}/{selected_micrograph}.mrc " \
-										f"--model topaz/model_epoch10.sav " \
+										f"--model {boxerTopaz.topaz_path}/model_epoch10.sav " \
 										f"--radius {pixradius} " \
 										f"--threshold {threshold} " \
 										f"--num-workers {threads} " \
@@ -1430,7 +1431,7 @@ class boxerTopaz(QtCore.QObject):
 
 		boxerTopaz._launch_childprocess(f"topaz extract " \
 										f"{boxerTopaz.micrographs_path}/*.mrc " \
-										f"--model topaz/model_epoch10.sav " \
+										f"--model {boxerTopaz.topaz_path}/model_epoch10.sav " \
 										f"--radius {pixradius} " \
 										f"--threshold {threshold} " \
 										f"--num-workers {threads} " \
