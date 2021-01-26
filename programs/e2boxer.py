@@ -1274,7 +1274,8 @@ class boxerConvNet(QtCore.QObject):
 
 class boxerTopaz(QtCore.QObject):
 	
-	conda_base_path = Path(subprocess.run(['conda info --base'], shell=True, capture_output=True).stdout.decode().strip())
+	conda_base_path = Path(subprocess.run(['conda info --base'],
+										  shell=True, capture_output=True).stdout.decode().strip())
 	conda_init_path = conda_base_path / "etc" / "profile.d" / "conda.sh"
 	conda_activate_cmd = "conda activate topaz"
 
