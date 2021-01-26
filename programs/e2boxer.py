@@ -1294,6 +1294,9 @@ class boxerTopaz(QtCore.QObject):
 							  capture_output=True
 							  )
 		if proc.returncode:
+			print(f"CMD   : {proc.args}")
+			print(f"STDOUT: {proc.stdout}")
+			print(f"STDERR: {proc.stderr}")
 			sys.exit(1)
 
 	@staticmethod
