@@ -1279,6 +1279,11 @@ class boxerTopaz(QtCore.QObject):
 	conda_init_path = conda_base_path / "etc" / "profile.d" / "conda.sh"
 	conda_activate_cmd = "conda activate topaz"
 
+	mrc_micro_path           = Path("topaz") / "mrc_micro"
+	particles_path           = Path("topaz") / "processed" / "particles"
+	micrographs_path         = Path("topaz") / "processed" / "micrographs"
+	predicted_particles_path = Path("topaz") / "processed" / "predicted_particles"
+
 	@staticmethod
 	def _launch_childprocess(cmd_topaz):
 		launch_childprocess(f".  {boxerTopaz.conda_init_path} " \
@@ -1322,10 +1327,10 @@ class boxerTopaz(QtCore.QObject):
 		gridlay.addWidget(boxerTopaz.gpu)
 		boxerTopaz.gpu.setToolTip("Use GPU only if it has over 16GB RAM")
 
-		for d in ["topaz/mrc_micro", 
-				  "topaz/processed/particles",
-				  "topaz/processed/micrographs",
-				  "topaz/processed/predicted_particles"]:
+		for d in [boxerTopaz.mrc_micro_path,
+				  boxerTopaz.particles_path,
+				  boxerTopaz.micrographs_path,
+				  boxerTopaz.predicted_particles_path]:
 			Path(d).mkdir(parents=True, exist_ok=True)
 
 		return
@@ -1361,19 +1366,19 @@ class boxerTopaz(QtCore.QObject):
 			sys.exit(1)
 		model = boxerTopaz.model
 
-		launch_childprocess('e2proc2d.py micrographs/*.hdf topaz/mrc_micro/@.mrc')
+		launch_childprocess(f'e2proc2d.py micrographs/*.hdf {boxerTopaz.mrc_micro_path}/@.mrc')
 
 		boxerTopaz._launch_childprocess(f"topaz convert " \
 										f"-s {downsample} " \
-										f"-o topaz/processed/particles/particles.txt " \
+										f"-o {boxerTopaz.particles_path}/particles.txt " \
 										f"boxfiles/*.box")
 		boxerTopaz._launch_childprocess(f"topaz preprocess " \
 										f"-s {downsample} " \
-										f"-o topaz/processed/micrographs/ " \
-										f"topaz/mrc_micro/*.mrc")
+										f"-o {boxerTopaz.micrographs_path}/ " \
+										f"{boxerTopaz.mrc_micro_path}/*.mrc")
 		boxerTopaz._launch_childprocess(f"topaz train " \
-										f"--train-images topaz/processed/micrographs/ " \
-										f"--train-targets topaz/processed/particles/particles.txt " \
+										f"--train-images {boxerTopaz.micrographs_path}/ " \
+										f"--train-targets {boxerTopaz.particles_path}/particles.txt " \
 										f"--radius 3 " \
 										f"--model {model} " \
 										f"--image-ext .mrc " \
@@ -1398,18 +1403,18 @@ class boxerTopaz(QtCore.QObject):
 		selected_micrograph = micrograph["source_path"].replace("micrographs/", '').replace(".hdf", '')
 
 		boxerTopaz._launch_childprocess(f"topaz extract " \
-										f"topaz/processed/micrographs/{selected_micrograph}.mrc " \
+										f"{boxerTopaz.micrographs_path}/{selected_micrograph}.mrc " \
 										f"--model topaz/model_epoch10.sav " \
 										f"--radius {pixradius} " \
 										f"--threshold {threshold} " \
 										f"--num-workers {threads} " \
-										f"--output topaz/processed/predicted_particles/{selected_micrograph}predicted.txt")
+										f"--output {boxerTopaz.predicted_particles_path}/{selected_micrograph}predicted.txt")
 		boxerTopaz._launch_childprocess(f"topaz convert " \
 										f"-x {downsample} " \
-										f"-o topaz/processed/predicted_particles/{selected_micrograph}predicted_full.txt " \
-										f"topaz/processed/predicted_particles/{selected_micrograph}predicted.txt")
+										f"-o {boxerTopaz.predicted_particles_path}/{selected_micrograph}predicted_full.txt " \
+										f"{boxerTopaz.predicted_particles_path}/{selected_micrograph}predicted.txt")
 
-		with open(f"topaz/processed/predicted_particles/{selected_micrograph}predicted_full.txt", "r") as f:
+		with open(f"{boxerTopaz.predicted_particles_path}/{selected_micrograph}predicted_full.txt", "r") as f:
 			next(f)
 			boxes = [(int((line.split())[1]),int((line.split())[2]),"auto_topaz") for line in f]
 		return boxes
@@ -1424,18 +1429,18 @@ class boxerTopaz(QtCore.QObject):
 		boxsize    = boxerTopaz.boxerwindow.vbbsize.getValue()
 
 		boxerTopaz._launch_childprocess(f"topaz extract " \
-										f"topaz/processed/micrographs/*.mrc " \
+										f"{boxerTopaz.micrographs_path}/*.mrc " \
 										f"--model topaz/model_epoch10.sav " \
 										f"--radius {pixradius} " \
 										f"--threshold {threshold} " \
 										f"--num-workers {threads} " \
-										f"--output topaz/processed/predicted_particles/predicted.txt")
+										f"--output {boxerTopaz.predicted_particles_path}/predicted.txt")
 		boxerTopaz._launch_childprocess(f"topaz convert " \
 										f"-x {downsample} " \
-										f"-o topaz/processed/predicted_particles/all_predicted_full.txt " \
-										f"topaz/processed/predicted_particles/predicted.txt")
+										f"-o {boxerTopaz.predicted_particles_path}/all_predicted_full.txt " \
+										f"{boxerTopaz.predicted_particles_path}/predicted.txt")
 
-		with open(f"topaz/processed/predicted_particles/all_predicted_full.txt", "r") as f:
+		with open(f"{boxerTopaz.predicted_particles_path}/all_predicted_full.txt", "r") as f:
 			next(f)
 			newboxes = [('micrographs/'+(line.split()[0])+'.hdf',int((line.split())[1]),int((line.split())[2]),"auto_topaz") for line in f]
 
