@@ -1287,6 +1287,7 @@ class boxerTopaz(QtCore.QObject):
 
 	@staticmethod
 	def _launch_childprocess(cmd_topaz):
+		print(f"Starting 'topaz'...\n{cmd_topaz}")
 		proc = subprocess.run(f".  {boxerTopaz.conda_init_path} " \
 							  f"&& {boxerTopaz.conda_activate_cmd} " \
 							  f"&& {cmd_topaz}", shell=True,
@@ -1294,6 +1295,8 @@ class boxerTopaz(QtCore.QObject):
 							  capture_output=True
 							  )
 		if proc.returncode:
+			print("FAILED SUB-PROCESS")
+			print("==================")
 			print(f"CMD   : {proc.args}")
 			print(f"STDOUT: {proc.stdout}")
 			print(f"STDERR: {proc.stderr}")
