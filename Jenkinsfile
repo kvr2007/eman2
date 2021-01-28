@@ -217,7 +217,7 @@ def testDeployedPackage(size_type) {
 }
 
 def getHomeDir() {
-    if(!isUnix()) return "${USERPROFILE}"
+    if(!isUnix()) return "D:"
     else          return "${HOME}"
 }
 
