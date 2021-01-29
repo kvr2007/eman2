@@ -19,9 +19,6 @@ requirements:
         - libglu                          # [linux]
     
 test:
-  requires:
-    - eman-deps     {{ environ.get('EMAN_DEPS_VERSION', '') }}
-  
   source_files:
     - examples/mpi_test.py
     - programs/
