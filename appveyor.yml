@@ -19,6 +19,7 @@ install:
     - set CPU_COUNT=2
 
     - conda.exe config --set show_channel_urls true
+    - conda.exe config --set channel_priority flexible
 
     - conda.exe install conda conda-build -c defaults --yes
 
