@@ -2,7 +2,7 @@
 
 set -xe
 
-source ${PREFIX}/bin/activate
+printenv
 
 conda config --env --set auto_update_conda False
 
