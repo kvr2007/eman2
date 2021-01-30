@@ -232,7 +232,7 @@ def isSkipStage() {
 //         'build-local',
 //         'build-recipe',
         'package',
-//         'test-package',
+        'test-package',
 //         'deploy',
 //         'test-continuous'
     ]
