@@ -25,7 +25,7 @@ constructor --version
 
 CONSTRUCTER_CACHE_DIR=${HOME_DIR}/.conda/constructor
 
-rm -rfv ${CONSTRUCTER_CACHE_DIR}/eman*
+#rm -rfv ${CONSTRUCTER_CACHE_DIR}/eman*
 constructor ${CONSTRUCT_YAML_DIR} -v --cache-dir=${CONSTRUCTER_CACHE_DIR}
 
 mv ${CONSTRUCT_YAML}.bak ${CONSTRUCT_YAML}
